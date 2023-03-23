@@ -1,0 +1,36 @@
+-- +migrate Up
+ALTER TYPE public.industry_type ADD VALUE 'Agriculture';
+ALTER TYPE public.industry_type ADD VALUE 'Apparel';
+ALTER TYPE public.industry_type ADD VALUE 'Banking';
+ALTER TYPE public.industry_type ADD VALUE 'Biotechnology';
+ALTER TYPE public.industry_type ADD VALUE 'Chemicals';
+ALTER TYPE public.industry_type ADD VALUE 'Communications';
+ALTER TYPE public.industry_type ADD VALUE 'Construction';
+ALTER TYPE public.industry_type ADD VALUE 'Consulting';
+ALTER TYPE public.industry_type ADD VALUE 'Education';
+ALTER TYPE public.industry_type ADD VALUE 'Electronics';
+ALTER TYPE public.industry_type ADD VALUE 'Energy';
+ALTER TYPE public.industry_type ADD VALUE 'Engineering';
+ALTER TYPE public.industry_type ADD VALUE 'Environment';
+ALTER TYPE public.industry_type ADD VALUE 'Finance';
+ALTER TYPE public.industry_type ADD VALUE 'Food & Beverage';
+ALTER TYPE public.industry_type ADD VALUE 'Government';
+ALTER TYPE public.industry_type ADD VALUE 'Healthcare';
+ALTER TYPE public.industry_type ADD VALUE 'Hospitality';
+ALTER TYPE public.industry_type ADD VALUE 'Insurance';
+ALTER TYPE public.industry_type ADD VALUE 'Machinery';
+ALTER TYPE public.industry_type ADD VALUE 'Manufacturing';
+ALTER TYPE public.industry_type ADD VALUE 'Media';
+ALTER TYPE public.industry_type ADD VALUE 'Not For Profit';
+ALTER TYPE public.industry_type ADD VALUE 'Other';
+ALTER TYPE public.industry_type ADD VALUE 'Recreation';
+ALTER TYPE public.industry_type ADD VALUE 'Retail';
+ALTER TYPE public.industry_type ADD VALUE 'Shipping';
+ALTER TYPE public.industry_type ADD VALUE 'Telecommunications';
+ALTER TYPE public.industry_type ADD VALUE 'Transportation';
+ALTER TYPE public.industry_type ADD VALUE 'Utilities';
+ALTER TYPE public.industry_type ADD VALUE 'Legal';
+ALTER TYPE public.industry_type ADD VALUE 'Human Resources';
+ALTER TYPE public.industry_type ADD VALUE 'Consumer';
+ALTER TYPE public.industry_type ADD VALUE 'Real Estate';
+-- +migrate Down

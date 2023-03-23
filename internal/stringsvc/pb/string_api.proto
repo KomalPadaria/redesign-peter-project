@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+option go_package = "github.com/jeroldleslie/api-base/internal/string/pb";
+
+service StringAPI {
+  rpc Uppercase(UppercaseRequest) returns (UppercaseResponse);
+  rpc Count(CountRequest) returns (CountResponse);
+}
+
+message UppercaseRequest {
+  string input = 1;
+}
+
+message UppercaseResponse {
+  string output = 1;
+}
+
+message CountRequest {
+  string input = 1;
+}
+
+message CountResponse {
+  int32 count = 1;
+}

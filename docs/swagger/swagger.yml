@@ -1,0 +1,5964 @@
+openapi: 3.0.3
+info:
+  title: Redesign API
+  description: Redesign API
+  contact:
+    name: Peter Jerold Leslie
+  version: v1
+
+servers:
+  - url: http://localhost:8080
+    description: Local
+  - url: https://re-trustportal-api-jeroldleslie-dev.pacenthink.co/
+    description: Development
+  - url: https://re-trustportal-api-jeroldleslie-qa.pacenthink.co/
+    description: QA
+  - url: https://re-trustportal-api-jeroldleslie-uat.pacenthink.co/
+    description: UAT
+  - url: https://re-trustportal-api-jeroldleslie-main.pacenthink.co/
+    description: Production
+
+tags:
+  - name: Health
+  - name: User
+  - name: Internal Company Users
+  - name: Company Website
+  - name: Tech Info Application
+  - name: Tech Info External Infra
+  - name: Tech Info Wireless
+  - name: Meetings
+  - name: Authorizations
+  - name: Locations
+
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      description: Health check
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /users/me:
+    get:
+      tags:
+        - User
+      description: Get logged user details
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    $ref: '#/components/schemas/UserMe'
+        500:
+          $ref: '#/components/responses/default500'
+    put:
+      tags:
+        - User
+      description: Update user account information
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/AccessToken'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAccountInfoBody'
+      responses:
+        200:
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    $ref: '#/components/schemas/User'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /users/{user_id}/companies/{company_id}/switch:
+    patch:
+      tags:
+        - User
+      description: Switch Current Company
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+      responses:
+        200:
+          description: Company Swtiched successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /users/{user_id}/companies:
+    get:
+      tags:
+        - User
+      description: Get User Companies
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/Keyword'
+      responses:
+        200:
+          description: List of companies
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Company'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/users:
+    post:
+      tags:
+        - Internal Company Users
+      description: Create user under a company via redesign portal
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCompanyUserRequestBody'
+      responses:
+        200:
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    $ref: '#/components/schemas/CompanyUserInternal'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+    get:
+      tags:
+        - Internal Company Users
+      description: Get all users under a company
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CompanyUser'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/users/invite:
+    post:
+      tags:
+        - Internal Company Users
+      description: Re-send user invite
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCompanyUserRequestBody'
+      responses:
+        200:
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{req_user_id}/settings/users/{user_id}:
+    put:
+      tags:
+        - Internal Company Users
+      description: Update user under a company via redesign portal
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/ReqUserIdPathParameter'
+        - $ref: '#/components/parameters/UserIdToUpdateDeletePathParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCompanyUserRequestBody'
+      responses:
+        200:
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    $ref: '#/components/schemas/CompanyUserInternal'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+    delete:
+      tags:
+        - Internal Company Users
+      description: Delete users under a company
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/ReqUserIdPathParameter'
+        - $ref: '#/components/parameters/UserIdToUpdateDeletePathParameter'
+      responses:
+        200:
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/website:
+    post:
+      tags:
+        - Company Website
+      description: Create company website
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePutCompanyWebsite'
+      responses:
+        200:
+          description: Website created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    $ref: '#/components/schemas/CompanyWebsite'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+    get:
+      tags:
+        - Company Website
+      description: Get all websites under a company
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CompanyWebsite'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/website/{website_id}:
+    put:
+      tags:
+        - Company Website
+      description: Update company website
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/WebsiteIdPathParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePutCompanyWebsite'
+      responses:
+        200:
+          description: Website updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    $ref: '#/components/schemas/CompanyWebsite'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+    delete:
+      tags:
+        - Company Website
+      description: Delete company websites
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/WebsiteIdPathParameter'
+      responses:
+        200:
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/assessments/application:
+    post:
+      tags:
+        - Tech Info Application
+      description: Create company application
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePutTechInfoApplication'
+      responses:
+        200:
+          description: Company application created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    $ref: '#/components/schemas/TechInfoApplicationCreateUpdate'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/assessments/applications:
+    get:
+      tags:
+        - Tech Info Application
+      description: Get all application under a company
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/Keyword'
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TechInfoApplication2'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/assessments/application/{application_id}:
+    put:
+      tags:
+        - Tech Info Application
+      description: Update company application
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/ApplicationIdPathParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePutTechInfoApplication'
+      responses:
+        200:
+          description: Company application updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    $ref: '#/components/schemas/TechInfoApplicationCreateUpdate'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+    patch:
+      tags:
+        - Tech Info Application
+      description: Company application patch update
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/ApplicationIdPathParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: Active
+      responses:
+        200:
+          description: Company application patch update successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: object
+                    properties:
+                      tech_info_application_uuid:
+                        type: string
+                        format: uuid
+                        example: ed570878-3156-45d9-a6ae-a738af09871a
+                      status:
+                        type: string
+                        example: Inactive
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+    delete:
+      tags:
+        - Tech Info Application
+      description: Delete company application
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/ApplicationIdPathParameter'
+      responses:
+        200:
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/assessments/application/{application_id}/env:
+    post:
+      tags:
+        - Application Environment
+      description: Create application env
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/ApplicationIdPathParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  example: Production
+                name:
+                  type: string
+                  example: Production 1
+                description:
+                  type: string
+                  example: test description
+                url:
+                  type: string
+                  example: http://amazon.com
+                hosting_provider_type:
+                  type: string
+                  example: Google Cloud Platform
+                hosting_provider:
+                  type: string
+                  example: "Google Cloud Platform"
+                mfa_type:
+                  type: string
+                  example: Google Authenticator
+                mfa:
+                  type: string
+                  example: "Google Authenticator"
+                ids_ips_type:
+                  type: string
+                  example: CrowdStrike
+                ids_ips:
+                  type: string
+                  example: "CrowdStrike"
+      responses:
+        200:
+          description: Application environment created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    $ref: '#/components/schemas/ApplicationEnv'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/assessments/application/{application_id}/env/{env_id}:
+    put:
+      tags:
+        - Application Environment
+      description: Update application env
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/ApplicationIdPathParameter'
+        - $ref: '#/components/parameters/EnvIdPathParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  example: Production
+                name:
+                  type: string
+                  example: Production 1
+                description:
+                  type: string
+                  example: test description
+                url:
+                  type: string
+                  example: http://amazon.com
+                hosting_provider_type:
+                  type: string
+                  example: Google Cloud Platform
+                hosting_provider:
+                  type: string
+                  example: "Google Cloud Platform"
+                mfa_type:
+                  type: string
+                  example: Google Authenticator
+                mfa:
+                  type: string
+                  example: "Google Authenticator"
+                ids_ips_type:
+                  type: string
+                  example: CrowdStrike
+                ids_ips:
+                  type: string
+                  example: "CrowdStrike"
+                status:
+                  type: string
+                  example: Active
+      responses:
+        200:
+          description: Application env updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    $ref: '#/components/schemas/ApplicationEnv'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+    patch:
+      tags:
+        - Application Environment
+      description: Application env patch update
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/ApplicationIdPathParameter'
+        - $ref: '#/components/parameters/EnvIdPathParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: Active
+      responses:
+        200:
+          description: Application env patch update successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: object
+                    properties:
+                      application_env_uuid:
+                        type: string
+                        format: uuid
+                        example: ed570878-3156-45d9-a6ae-a738af09871a
+                      status:
+                        type: string
+                        example: Inactive
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+    delete:
+      tags:
+        - Application Environment
+      description: Delete application env
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/ApplicationIdPathParameter'
+        - $ref: '#/components/parameters/EnvIdPathParameter'
+      responses:
+        200:
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/assessments/external/infra:
+    post:
+      tags:
+        - Tech Info External Infra
+      description: Create tech info external infrastructure
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TechInfoExternalInfraCreateUpdate'
+      responses:
+        200:
+          description: Tech info external infrastructure created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    $ref: '#/components/schemas/TechInfoExternalInfra'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+    get:
+      tags:
+        - Tech Info External Infra
+      description: Get all tech info external infrastructure
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TechInfoExternalInfra'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/assessments/external/infra/{external_infra_id}:
+    put:
+      tags:
+        - Tech Info External Infra
+      description: Update tech info external infrastructure
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/ExternalInfraIdPathParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TechInfoExternalInfraCreateUpdate'
+      responses:
+        200:
+          description: External infrastucture updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    $ref: '#/components/schemas/TechInfoExternalInfra'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+    delete:
+      tags:
+        - Tech Info External Infra
+      description: Delete external infrastucture
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/ExternalInfraIdPathParameter'
+      responses:
+        200:
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/assessments/wireless:
+    post:
+      tags:
+        - Tech Info Wireless
+      description: Create tech info wireless assessment
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TechInfoWirelessCreateUpdate'
+      responses:
+        200:
+          description: Tech info wireless assessment created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    $ref: '#/components/schemas/TechInfoWireless'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+    get:
+      tags:
+        - Tech Info Wireless
+      description: Get all tech info wireless assessment
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TechInfoWireless'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/assessments/wireless/{wireless_id}:
+    put:
+      tags:
+        - Tech Info Wireless
+      description: Update tech info external infrastructure
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/WirelessIdPathParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TechInfoWirelessCreateUpdate'
+      responses:
+        200:
+          description: Tech info wireless assessment updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    $ref: '#/components/schemas/TechInfoWireless'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+    delete:
+      tags:
+        - Tech Info Wireless
+      description: Delete wireless assessment
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/WirelessIdPathParameter'
+      responses:
+        200:
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+    patch:
+      tags:
+        - Tech Info Wireless
+      description: Wireless patch update
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/WirelessIdPathParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: Active
+      responses:
+        200:
+          description: Wireless patch update successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: object
+                    properties:
+                      tech_info_application_uuid:
+                        type: string
+                        format: uuid
+                        example: ed570878-3156-45d9-a6ae-a738af09871a
+                      status:
+                        type: string
+                        example: Inactive
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/meetings:
+    get:
+      tags:
+        - Meetings
+      description: Get meetings
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Meetings'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/meetings:
+    get:
+      tags:
+        - Meetings
+      description: Get meetings which are scheduled under a company
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CompanyMeetings'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/signatures:
+    get:
+      tags:
+        - Authorizations
+      description: Get signatures under a company
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Signatures'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/signatures/{company_signature_uuid}:
+    patch:
+      tags:
+        - Authorizations
+      description: Update status
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/CompanySignatureUuidPathParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [ Signed, Not Signed ]
+                  example: Signed
+      responses:
+        200:
+          description: Company signature status updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: object
+                    properties:
+                      company_signature_uuid:
+                        type: string
+                        example: 4c05fe6d-1b49-467e-a2fb-a5d318d6b796
+                      status:
+                        type: string
+                        example: Signed
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/address:
+    post:
+      tags:
+        - Locations
+      description: Create address under a company
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                zip:
+                  type: string
+                  example: 80014
+                country:
+                  type: string
+                  example: US
+                state:
+                  type: string
+                  example: CL
+                city:
+                  type: string
+                  example: Aurora
+                address1:
+                  type: string
+                  example: 2832
+                address2:
+                  type: string
+                  example: Snider Street
+                status:
+                  type: string
+                  example: Active
+                facilities:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        example: Others
+                      status:
+                        type: string
+                        example: Active
+                      name:
+                        type: string
+                        required: false
+                        example: Branch Office
+      responses:
+        200:
+          description: Company address with facilities created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    $ref: '#/components/schemas/Address'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/addresses:
+    get:
+      tags:
+        - Locations
+      description: Get addresses under a company
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Address'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/address/{address_id}:
+    delete:
+      tags:
+        - Locations
+      description: Delete address
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/AddressIdPathParameter'
+      responses:
+        200:
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+    put:
+      tags:
+        - Locations
+      description: Update address under a company
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/AddressIdPathParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                zip:
+                  type: string
+                  example: 80014
+                country:
+                  type: string
+                  example: US
+                state:
+                  type: string
+                  example: CL
+                city:
+                  type: string
+                  example: Aurora
+                address1:
+                  type: string
+                  example: 2832
+                address2:
+                  type: string
+                  example: Snider Street
+                status:
+                  type: string
+                  example: Active
+                facilities:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        example: Corporate Office
+                      status:
+                        type: string
+                        example: Active
+      responses:
+        200:
+          description: Company address with facilities updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    $ref: '#/components/schemas/Address'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+    patch:
+      tags:
+        - Locations
+      description: Patch update company address
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/AddressIdPathParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: Active
+      responses:
+        200:
+          description: Company address patch updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: object
+                    properties:
+                      company_address_uuid:
+                        type: string
+                        example: 4c05fe6d-1b49-467e-a2fb-a5d318d6b796
+                      status:
+                        type: string
+                        example: Inactive
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/assessments/ips:
+    get:
+      tags:
+        - Tech Info IP ranges
+      description: Get all IP ranges under a company
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/IPRanges'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/assessments/ip:
+    post:
+      tags:
+        - Tech Info IP ranges
+      description: Create IP range under a company
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                company_facility_uuid:
+                  type: string
+                  example: cae604d4-fa68-4163-a5eb-69b4c902d41b
+                ip_address:
+                  type: string
+                  example: "192.168.99.9"
+                prefix:
+                  type: number
+                  example: 24
+                is_external:
+                  type: boolean
+                  example: false
+      responses:
+        200:
+          description: IP range created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    $ref: '#/components/schemas/IPRanges'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/assessments/ip/{ip_range_id}:
+    delete:
+      tags:
+        - Tech Info IP ranges
+      description: Delete IP Range
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/IpRangeIdPathParameter'
+      responses:
+        200:
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+    put:
+      tags:
+        - Tech Info IP ranges
+      description: Update IP range
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/IpRangeIdPathParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                company_facility_uuid:
+                  type: string
+                  example: cae604d4-fa68-4163-a5eb-69b4c902d41b
+                ip_address:
+                  type: string
+                  example: "192.168.99.9"
+                prefix:
+                  type: number
+                  example: 24
+                is_external:
+                  type: boolean
+                  example: false
+      responses:
+        200:
+          description: IP range updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    $ref: '#/components/schemas/IPRanges'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+    patch:
+      tags:
+        - Tech Info IP ranges
+      description: Patch update IP range
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/IpRangeIdPathParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: Active
+      responses:
+        200:
+          description: IP range patch updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: object
+                    properties:
+                      tech_info_ip_range_uuid:
+                        type: string
+                        example: f9dfc6aa-3677-4320-ab61-1c6b75fe32f5
+                      status:
+                        type: string
+                        example: Inactive
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/facilities:
+    get:
+      tags:
+        - Company Facilities
+      description: Get all facilities under a company
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/FacilityQuery'
+        - $ref: '#/components/parameters/FacilityStatus'
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/IPRanges'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/policies:
+    get:
+      tags:
+        - Policies & Procedures
+      description: Get all policies
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/Keyword'
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/GetAllPolicies'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/policies/stats:
+    get:
+      tags:
+        - Policies & Procedures
+      description: Get all policies stats
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: object
+                    items:
+                      $ref: '#/components/schemas/PoliciesStats'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/policy:
+    post:
+      tags:
+        - Policies & Procedures
+      description: Create policy
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Policy Name
+      responses:
+        200:
+          description: Policy created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    $ref: '#/components/schemas/Policy'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/policy/{policy_id}:
+    get:
+      tags:
+        - Policies & Procedures
+      description: Get Policy Document
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/PolicyIdPathParameter'
+        - $ref: '#/components/parameters/Version'
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    $ref: '#/components/schemas/PolicyDocument'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+    delete:
+      tags:
+        - Policies & Procedures
+      description: Delete Policy
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/PolicyIdPathParameter'
+      responses:
+        200:
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+    patch:
+      tags:
+        - Policies & Procedures
+      description: Policy Status Patch Update
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/PolicyIdPathParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: Rejected
+                comment:
+                  type: string
+                  example: "Sample String"
+      responses:
+        200:
+          description: Policy Status Patched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: object
+                    properties:
+                      policy_uuid:
+                        type: string
+                        format: uuid
+                        example: fa1fa992-faeb-47e7-97a1-64b03c65d6c8
+                      status:
+                        type: string
+                        example: Rejected
+                      comment:
+                        type: string
+                        example: "Rejected Feedback"
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/policy/{policy_id}/document:
+    get:
+      tags:
+        - Policies & Procedures
+      description: Get Document
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/PolicyIdPathParameter'
+        - $ref: '#/components/parameters/Version'
+      responses:
+        200:
+          description: Policy Document in Word .docx format
+          content:
+            application/vnd.openxmlformats-officedocument.wordprocessingml.document:
+              schema:
+                type: string
+                format: binary
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+    post:
+      tags:
+        - Policies & Procedures
+      description: Save Document
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/PolicyIdPathParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Policy Name
+                document:
+                  type: string
+                  example: "<html></html>"
+      responses:
+        200:
+          description: Document saved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    $ref: '#/components/schemas/PolicyDocument'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/policy/{policy_id}/history:
+    get:
+      tags:
+        - Policies & Procedures
+      description: Get Policy History
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/PolicyIdPathParameter'
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    items:
+                      $ref: '#/components/schemas/PolicyHistory'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/policies/templates:
+    get:
+      tags:
+        - Policies & Procedures
+      description: Get Policy Templates
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/CompanyType'
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    items:
+                      type: object
+                      properties:
+                        policy_template_uuid:
+                          type: string
+                        name:
+                          type: string
+                        description:
+                          type: string
+
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/policy/{template_id}:
+    post:
+      tags:
+        - Policies & Procedures
+      description: Create document from template
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/TemplateIdPathParameter'
+      responses:
+        200:
+          description: Document saved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    $ref: '#/components/schemas/PolicyDocument'
+  /companies/{company_id}/users/{user_id}/phishing:
+    get:
+      tags:
+        - Security Awareness
+      description: Get phishing campaign details for current quarter
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: object
+                    properties:
+                      campaign:
+                        type: object
+                        properties:
+                          current:
+                            type: object
+                            properties:
+                              name:
+                                type: string
+                                example: "Q4 2022"
+                              start_date:
+                                type: string
+                                example: "2022-10-01T00:00:00+05:30"
+                              end_date:
+                                type: string
+                                example: "2022-12-31T00:00:00+05:30"
+                          next:
+                            type: object
+                            properties:
+                              name:
+                                type: string
+                                example: "Q1 2023"
+                              start_date:
+                                type: string
+                                example: "2023-01-01T00:00:00+05:30"
+                              end_date:
+                                type: string
+                                example: "2023-03-31T00:00:00+05:30"
+                      stat:
+                        type: object
+                        properties:
+                          passed:
+                            type: number
+                            example: 6
+                          failed:
+                            type: number
+                            example: 4
+                          total_participant:
+                            type: number
+                            example: 10
+                      top_clickers:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            full_name:
+                              type: string
+                              example: "Peter Leslie"
+                            email:
+                              type: string
+                              example: "test@nurdsoft.co"
+                            clicked_count:
+                              type: number
+                              example: 2
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/training:
+    get:
+      tags:
+        - Security Awareness
+      description: Get training campaign details for current quarter
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: object
+                    properties:
+                      campaign:
+                        type: object
+                        properties:
+                          current:
+                            type: object
+                            properties:
+                              name:
+                                type: string
+                                example: "Q4 2022"
+                              start_date:
+                                type: string
+                                example: "2022-10-01T00:00:00+05:30"
+                              end_date:
+                                type: string
+                                example: "2022-12-31T00:00:00+05:30"
+                          next:
+                            type: object
+                            properties:
+                              name:
+                                type: string
+                                example: "Q1 2023"
+                              start_date:
+                                type: string
+                                example: "2023-01-01T00:00:00+05:30"
+                              end_date:
+                                type: string
+                                example: "2023-03-31T00:00:00+05:30"
+                      stat:
+                        type: object
+                        properties:
+                          not_started:
+                            type: number
+                            example: 0
+                          in_progress:
+                            type: number
+                            example: 1
+                          completed:
+                            type: number
+                            example: 0
+                          passed:
+                            type: number
+                            example: 2
+                          past_due:
+                            type: number
+                            example: 0
+                          total_enrollments:
+                            type: number
+                            example: 3
+  /companies/{company_id}/users/{user_id}/security/awareness/users:
+    post:
+      tags:
+        - Security Awareness
+      description: Upload data for Security Awareness Campaign Users
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      requestBody:
+        content:
+          text/csv:
+            schema:
+              type: string
+              format: binary
+      responses:
+        200:
+          description: Users added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+    get:
+      tags:
+        - Security Awareness
+      description: Download Security Campaign users as a CSV file
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      responses:
+        200:
+          description: Document converted successfully
+          produces:
+            text/csv:
+              schema:
+                type: file
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/vulnerabilities/topremediation:
+    get:
+      tags:
+        - Vulnerabilities
+      description: Get top rremediation tasks
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: object
+                    properties:
+                      error:
+                        type: object
+                        properties:
+                          code:
+                            type: number
+                          message:
+                            type: string
+                      data:
+                        $ref: '#/components/schemas/TopRemediations'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/vulnerabilities/stats:
+    get:
+      tags:
+        - Vulnerabilities
+      description: Get Vulnerabilities Stats
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/VulnerabilityStats'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/penetration/topremediation:
+    get:
+      tags:
+        - Penetration Tests
+      description: Get all Penetration Tests
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    $ref: '#/components/schemas/TopRemediations'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/settings/penetration/stats:
+    get:
+      tags:
+        - Penetration Tests
+      description: Get Penetration Tests Stats
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/VulnerabilityStats'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/remediations:
+    get:
+      tags:
+        - Remediations
+      description: Get Remediations by severity
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/SeverityPathParameter'
+        - $ref: '#/components/parameters/Top'
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        severity:
+                          type: string
+                          example: "Critical"
+                        instances:
+                          type: number
+                          example: 2
+                        source:
+                          type: string
+                          example: "URL"
+                        issue_name:
+                          type: string
+                          example: "Security Update for Microsoft Office 2010 (KB3203468) 64-Bit Edition"
+                        recommendation:
+                          type: string
+                          example: "Download and apply the patch from: https://support.microsoft.com/kb/3203468 (https://support.microsoft.com/kb/3203468)"
+                        remediation_detail:
+                          type: object
+                          properties:
+                            remediation_name:
+                              type: string
+                              example: "Security Update for Microsoft Office 2010 (KB3203468) 64-Bit Edition"
+                            remediation_link:
+                              type: string
+                              example: "https://support.microsoft.com/kb/3203468"
+                            issue_description:
+                              type: string
+                              example: "Unsupported versions of PHP may contain unpatched security flaws. It is strongly recommended to upgrade to a supported version."
+                            recommendations:
+                              type: array
+                              items:
+                                type: string
+                                example: "Download and apply the patch from: http://support.microsoft.com/kb/2956073 (http://support.microsoft.com/kb/2956073)"
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/frameworks:
+    get:
+      tags:
+        - Frameworks
+      description: Get all Frameworks
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Frameworks'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/frameworks/{framework_id}/controls:
+    get:
+      tags:
+        - Frameworks
+      description: Get all Framework Controls
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/FrameworkIdPathParameter'
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FrameworkControls'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/frameworks/stats:
+    get:
+      tags:
+        - Frameworks
+      description: Get Framework stats
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FrameworkStats'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/categories:
+    get:
+      tags:
+        - Questionnaire
+      description: Get all categories under a company with stats
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: object
+                    properties:
+                      error:
+                        type: object
+                        properties:
+                          code:
+                            type: number
+                            example: 0
+                          message:
+                            type: string
+                            example: ""
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            category:
+                              type: string
+                              example: Electronic Access
+                            stats:
+                              type: object
+                              properties:
+                                total:
+                                  type: number
+                                  example: 8
+                                completed:
+                                  type: number
+                                  example: 1
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/categories/{category}/questionnaires:
+    get:
+      tags:
+        - Questionnaire
+      description: Get all questionnaires under a category
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/CategoryPathParameter'
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: object
+                    properties:
+                      error:
+                        type: object
+                        properties:
+                          code:
+                            type: number
+                            example: 0
+                          message:
+                            type: string
+                            example: ""
+                      data:
+                        type: object
+                        properties:
+                          error:
+                            type: object
+                            properties:
+                              code:
+                                type: number
+                                example: 0
+                              message:
+                                type: string
+                                example: ""
+                          data:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                questionnaires_uuid:
+                                  type: string
+                                  example: "7c1b4c63-aa44-415f-9d77-60cc54f83607"
+                                category:
+                                  type: string
+                                  example: "Electronic Access"
+                                question:
+                                  type: string
+                                  example: "Is electronic access control in place to all secure areas of the facility?"
+                                option_type:
+                                  type: string
+                                  example: "radio"
+                                comment_type:
+                                  type: string
+                                  example: "optional"
+                                options:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      questionnaire_options_uuid:
+                                        type: string
+                                        example: "0a1f6da4-996c-4983-a5f5-2d5f1f8bec98"
+                                      value:
+                                        type: number
+                                        example: 1
+                                      label:
+                                        type: string
+                                        example: "Option-1"
+                                answer:
+                                  type: object
+                                  properties:
+                                    questionnaire_answers_uuid:
+                                      type: string
+                                      example: "4db59ab6-238f-4581-803e-ee07975a3bcd"
+                                    feedback:
+                                      type: object
+                                      properties:
+                                        title:
+                                          type: string
+                                          example: "some title"
+                                        recommendation:
+                                          type: string
+                                          example: "recommendation text"
+                                        status:
+                                          type: string
+                                          example: "pending"
+                                        severity:
+                                          type: string
+                                          example: "high"
+                                    options:
+                                      type: array
+                                      items:
+                                        type: object
+                                        properties:
+                                          questionnaire_options_uuid:
+                                            type: string
+                                            example: "0a1f6da4-996c-4983-a5f5-2d5f1f8bec98"
+                                          value:
+                                            type: number
+                                            example: 1
+                                          label:
+                                            type: string
+                                            example: "Option-1"
+                                    comment:
+                                      type: string
+                                      example: "My Comment"
+                                    created_at:
+                                      type: string
+                                      example: "2022-12-14 19:33:08.240078 +0000 UTC"
+                                    created_by:
+                                      type: string
+                                      example: "Peter Leslie"
+                                    files:
+                                      type: array
+                                      items:
+                                        type: object
+                                        properties:
+                                          id:
+                                            type: string
+                                            example: "0a1f6da4-996c-4983-a5f5-2d5f1f8bec98"
+                                          full_name:
+                                            type: string
+                                            example: "myfile.pdf"
+                                          s3key:
+                                            type: string
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/questionnaires/answers:
+    post:
+      tags:
+        - Questionnaire
+      description: Post answers for questions
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  questionnaires_uuid:
+                    type: string
+                    format: uuid
+                    example: "0b604bae-5e6a-4d41-b6dd-928adfd88b4b"
+                  answer:
+                    type: object
+                    properties:
+                      options:
+                        type: array
+                        items:
+                          type: string
+                          format: uuid
+                          example: "a99f3538-8f83-452b-b966-1a91a14a7862"
+                      comment:
+                        type: string
+                        example: "some comment here"
+      responses:
+        201:
+          description: Answers submitted successfully
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+
+  /companies/{company_id}/users/{user_id}/questionnaires/submit:
+    post:
+      tags:
+        - Questionnaire
+      description: Submit Questionnaire
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "submitted"
+      responses:
+        201:
+          description: Status submitted successfully
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/questionnaires/{questionnaire_id}/answer:
+    post:
+      tags:
+        - Questionnaire
+      description: Post a single answer for a question with evidence files
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/QuestionnaireIdPathParameter'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                data:
+                  type: object
+                  properties:
+                    options:
+                      type: array
+                      items:
+                        type: string
+                        format: uuid
+                        example: "a99f3538-8f83-452b-b966-1a91a14a7862"
+                    comment:
+                      type: string
+                      example: "some comment here"
+      responses:
+        201:
+          description: Answers submitted successfully
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+
+  /companies/{company_id}/users/{user_id}/questionnaires/{questionnaire_id}/answers/{answer_id}/files/{file_id}:
+    get:
+      tags:
+        - Questionnaire
+      description: Download Answer Evidence report
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/QuestionnaireIdPathParameter'
+        - $ref: '#/components/parameters/AnswerIdPathParameter'
+        - $ref: '#/components/parameters/FileIdPathParameter'
+      responses:
+        200:
+          description: Downloaded successfully
+          content: # Response body
+            image/*: # Media type
+              schema:
+                type: string
+                format: binary
+            application/*:
+              schema:
+                type: string
+                format: binary
+            text/*:
+              schema:
+                type: string
+                format: binary
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+    delete:
+      tags:
+        - Questionnaire
+      description: Delete answer evidence
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/QuestionnaireIdPathParameter'
+        - $ref: '#/components/parameters/AnswerIdPathParameter'
+        - $ref: '#/components/parameters/FileIdPathParameter'
+      responses:
+        200:
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/questionnaires/{questionnaire_id}/answers/{answer_id}:
+    put:
+      tags:
+        - Questionnaire
+      description: Update Answer
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/QuestionnaireIdPathParameter'
+        - $ref: '#/components/parameters/AnswerIdPathParameter'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                data:
+                  type: object
+                  properties:
+                    options:
+                      type: array
+                      items:
+                        type: string
+                        format: uuid
+                        example: "a99f3538-8f83-452b-b966-1a91a14a7862"
+                    comment:
+                      type: string
+                      example: "some comment here"
+      responses:
+        200:
+          description: Updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/questionnaires/{questionnaire_id}/answers/{answer_id}/feedback:
+    post:
+      tags:
+        - Questionnaire
+      description: Add Engineer Feedback
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/QuestionnaireIdPathParameter'
+        - $ref: '#/components/parameters/AnswerIdPathParameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: "Some Title"
+                recommendation:
+                  type: string
+                status:
+                  type: string
+                  example: fully
+                severity:
+                  type: string
+                  example: medium
+      responses:
+        201:
+          description: Answers submitted successfully
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/consulting/hours:
+    get:
+      tags:
+        - Customer Success
+      description: Get Consulting Hours
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        subscription_id:
+                          type: string
+                          example: "sub-id-123345"
+                        name:
+                          type: string
+                          example: "Cybersecurity Engineering Professional Services"
+                        hours_consumed:
+                          type: number
+                          example: 2
+                        hours_total:
+                          type: number
+                          example: 2
+                        from:
+                          type: string
+                          format: 'date-time'
+                          example: "2023-01-10"
+                        to:
+                          type: string
+                          format: 'date-time'
+                          example: "2023-12-31"
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/consulting/consumed-hour:
+    get:
+      tags:
+        - Customer Success
+      description: Get Consumed Hour
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/UserIdPathParameter'
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    type: object
+                    properties:
+                      ticket_number:
+                        type: string
+                        example: "T123"
+                      type:
+                        type: string
+                        example: "XYZ"
+                      assigned_to:
+                        type: string
+                        example: "Jeff"
+                      time_consumed:
+                        type: number
+                        example: 2
+                      close_date:
+                        type: string
+                        format: 'date-time'
+                        example: "2023-01-10"  
+                
+                      
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/subscriptions:
+    get:
+      tags:
+        - Customer Success
+      description: Get Services
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                        example: 0
+                      message:
+                        type: string
+                        example: ""
+                  data:
+                    type: object
+                    properties:
+                      subscription_name:
+                        type: string
+                        example: "Bronze"
+                      start_date:
+                        type: string
+                        example: "2023-01-10"
+                      end_date:
+                        type: string
+                        example: "2023-12-31"
+                      services:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              example: "Cybersecurity Engineering Professional Services"
+                            start_date:
+                              type: string
+                              example: "2023-01-10"
+                            end_date:
+                              type: string
+                              example: "2023-12-31"
+                            type:
+                              type: string
+                              example: ""
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/subscriptions/plan:
+    get:
+      tags:
+        - Customer Success
+      description: Get Subscriptions Plan
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'        
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    $ref: '#/components/schemas/SubscriptionsPlan'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/services-review:
+    get:
+      tags:
+        - Customer Success
+      description: Get Service Review
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'  
+        - $ref: '#/components/parameters/UserIdPathParameter'      
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    $ref: '#/components/schemas/ServiceReview'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/users/{user_id}/services-review/{evidence_id}/acknowledge:
+    patch:
+      tags:
+        - Customer Success
+      description: Patch Evidance status
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'  
+        - $ref: '#/components/parameters/UserIdPathParameter'
+        - $ref: '#/components/parameters/EvidenceIdPathParatameter'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: ACKNOWLEDGED
+      responses:
+        200:
+          description: Fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: number
+                      message:
+                        type: string
+                  data:
+                    $ref: '#/components/schemas/Evidence'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/services-review/{service_id}/evidence/reports:
+    post:
+      tags:
+        - Customer Success
+      description: Upload evidence reports
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/ServiceIdPathParameter'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        201:
+          description: Evidence report submitted successfully
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/services-review/{service_id}/evidence/{evidence_id}/reports:
+    put:
+      tags:
+        - Customer Success
+      description: Add evidence reports to existing evidence
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/ServiceIdPathParameter'
+        - $ref: '#/components/parameters/EvidenceIdPathParatameter'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        201:
+          description: Evidence report submitted successfully
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/services-review/{service_id}/evidence/{evidence_id}/reports/{report_id}:
+    delete:
+      tags:
+        - Customer Success
+      description: Delete report under an evidence
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/ServiceIdPathParameter'
+        - $ref: '#/components/parameters/EvidenceIdPathParatameter'
+        - $ref: '#/components/parameters/ReportIdPathParatameter'
+      responses:
+        200:
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/services-review/{service_id}/evidence/{evidence_id}/reports/{report_name}:
+    get:
+      tags:
+        - Customer Success
+      description: Download service report
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/ServiceIdPathParameter'
+        - $ref: '#/components/parameters/EvidenceIdPathParatameter'
+        - $ref: '#/components/parameters/ReportName'
+      responses:
+        200:
+          description: Downloaded successfully
+          content: # Response body
+            image/*: # Media type
+              schema:
+                type: string
+                format: binary
+            application/*:
+              schema:
+                type: string
+                format: binary
+            text/*:
+              schema:
+                type: string
+                format: binary
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/subscriptions/{service_name}/reports:
+    post:
+      tags:
+        - Customer Success
+      description: Upload service reports
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/ServiceName'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        201:
+          description: Answers submitted successfully
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /companies/{company_id}/subscriptions/{service_name}/reports/{report_name}:
+    get:
+      tags:
+        - Customer Success
+      description: Download service report
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/ServiceName'
+        - $ref: '#/components/parameters/ReportName'
+      responses:
+        200:
+          description: Downloaded successfully
+          content: # Response body
+            image/*: # Media type
+              schema:
+                type: string
+                format: binary
+            application/*:
+              schema:
+                type: string
+                format: binary
+            text/*:
+              schema:
+                type: string
+                format: binary
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+    delete:
+      tags:
+        - Customer Success
+      description: Delete service report
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/CompanyIdPathParameter'
+        - $ref: '#/components/parameters/ServiceName'
+        - $ref: '#/components/parameters/ReportName'
+      responses:
+        200:
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+        400:
+          $ref: '#/components/responses/default400'
+        401:
+          $ref: '#/components/responses/default401'
+        403:
+          $ref: '#/components/responses/default403'
+        404:
+          $ref: '#/components/responses/default404'
+        500:
+          $ref: '#/components/responses/default500'
+  /webhook/sf/account:
+    post:
+      tags:
+        - Webhooks
+      description: Salesforce account webhook
+      parameters:
+        - $ref: '#/components/parameters/Token'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        201:
+          description: data passed successfully
+  /webhook/sf/account/subscriptions:
+    post:
+      tags:
+        - Webhooks
+      description: Salesforce account subscriptions webhook
+      parameters:
+        - $ref: '#/components/parameters/Token'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        201:
+          description: data passed successfully
+components:
+  responses:
+    default400:
+      description: Request input was incorrect
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  code:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: "some error message"
+    default401:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  code:
+                    type: number
+                    example: 401
+                  message:
+                    type: string
+                    example: "some error message"
+    default403:
+      description: No permission
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  code:
+                    type: number
+                    example: 403
+                  message:
+                    type: string
+                    example: "some error message"
+    default404:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  code:
+                    type: number
+                    example: 404
+                  message:
+                    type: string
+                    example: "some error message"
+    default500:
+      description: Business logic error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  code:
+                    type: number
+                    example: 500
+                  message:
+                    type: string
+                    example: "some error message"
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: number
+              example: 400
+            message:
+              type: string
+              example: "some error message"
+        data:
+          type: string
+          example: ""
+    EmptyResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: number
+              example: 0
+            message:
+              type: string
+              example: ""
+        data:
+          type: string
+          example: ""
+    UserMe:
+      type: object
+      properties:
+        user_uuid:
+          type: string
+          example: 64d1802e-1fa4-4732-b182-0719199108a8
+        username:
+          type: string
+          example: 33743d96-841a-4003-93c3-2de32f8ac6ca
+        first_name:
+          type: string
+          example: Peter
+        last_name:
+          type: string
+          example: Leslie
+        email:
+          type: string
+          example: peterleslie@test.com
+        is_first_login:
+          type: boolean
+          example: true
+        isMfaSmsEnabled:
+          type: bool
+          example: false
+        isMfaAppEnabled:
+          type: bool
+          example: true
+        group:
+          type: string
+          example: superadmin
+        company:
+          type: object
+          properties:
+            company_uuid:
+              type: string
+              example: a0f9e860-f3fa-4994-a8d4-eb156dfce805
+            name:
+              type: string
+              example: DEV Account 1
+            user_role:
+              type: string
+              example: admin
+            type:
+              type: string
+              example: customer
+            industry_type:
+              type: array
+              items:
+                type: string
+                example: Entertainment
+            onboarding:
+              type: array
+              items:
+                type: object
+                properties:
+                  position:
+                    type: number
+                    example: 1
+                  name:
+                    type: string
+                    example: Company Info
+                  url:
+                    type: string
+                    example: /company/settings/info
+                  status:
+                    type: string
+                    example: DRAFT
+                  updated_by:
+                    type: string
+                    example: 11063f4c-9a75-4fbe-b06c-c60edc53061e
+                  updated_at:
+                    type: string
+                    example: 2022-09-14 01:08:52.722 +0530
+            address:
+              type: object
+              properties:
+                address_line_1:
+                  type: string
+                  example: 19851 Century Blvd
+                address_line_2:
+                  type: string
+                  example: ""
+                city:
+                  type: string
+                  example: Germantown
+                state:
+                  type: string
+                  example: Maryland
+                country:
+                  type: string
+                  example: United States
+                zip_code:
+                  type: string
+                  example: 20874
+        companies:
+          type: array
+          items:
+            type: object
+            properties:
+              company_uuid:
+                type: string
+                example: a0f9e860-f3fa-4994-a8d4-eb156dfce805
+              name:
+                type: string
+                example: DEV Account 1
+              user_role:
+                type: string
+                example: admin
+              type:
+                type: string
+                example: engineering
+              industry_type:
+                type: array
+                items:
+                  type: string
+                  example: Entertainment
+    User:
+      type: object
+      properties:
+        user_uuid:
+          type: string
+          example: 64d1802e-1fa4-4732-b182-0719199108a8
+        username:
+          type: string
+          example: 33743d96-841a-4003-93c3-2de32f8ac6ca
+        first_name:
+          type: string
+          example: Peter
+        last_name:
+          type: string
+          example: Leslie
+        email:
+          type: string
+          example: peterleslie@test.com
+        phone:
+          type: string
+          example: "+91921ZZZ9XX"
+        job:
+          type: string
+          example: "Engineer"
+        is_first_login:
+          type: boolean
+          example: true
+        external_id:
+          type: string
+          example: 003Jx0000014T9YICX
+        created_at:
+          type: string
+          example: 2022-10-11T15:29:46Z
+        updated_at:
+          type: string
+          example: 2022-10-11T15:29:46Z
+    CompanyUser:
+      type: object
+      properties:
+        user_uuid:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        created_at:
+          type: string
+        role:
+          type: string
+        status:
+          type: string
+    CompanyWebsite:
+      type: object
+      properties:
+        company_website_uuid:
+          type: string
+          example: 64d1802e-1fa4-4732-b182-0719199108a8
+        company_uuid:
+          type: string
+          example: 64d1802e-1fa4-4732-b182-0719199108a8
+        url:
+          type: string
+          example: https://www.amazon.in
+        industry_type:
+          type: string
+          enum: [Entertainment]
+          example: Entertainment
+        zip:
+          type: string
+          example: 11758
+        country:
+          type: string
+          example: US
+        state:
+          type: string
+          example: ND
+        city:
+          type: string
+          example: Massapequa
+        address1:
+          type: string
+          example: 4267 Merrick Rd
+        address2:
+          type: string
+          example: ""
+        created_at:
+          type: string
+          example: 2022-10-11T15:29:46Z
+        updated_at:
+          type: string
+          example: 2022-10-11T15:29:46Z
+        created_by:
+          type: string
+          example: 64d1802e-1fa4-4732-b182-0719199108a8
+        updated_by:
+          type: string
+          example: 64d1802e-1fa4-4732-b182-0719199108a8
+    CreatePutCompanyWebsite:
+      type: object
+      properties:
+        url:
+          type: string
+          example: https://www.amazon.in
+        industry_type:
+          type: string
+          enum: [Entertainment]
+          example: Entertainment
+        zip:
+          type: string
+          example: "11758"
+        country:
+          type: string
+          example: US
+        state:
+          type: string
+          example: ND
+        city:
+          type: string
+          example: Massapequa
+        address1:
+          type: string
+          example: 4267 Merrick Rd
+        address2:
+          type: string
+          example: ""
+    TechInfoApplication:
+      type: object
+      properties:
+        tech_info_application_uuid:
+          type: string
+        company_uuid:
+          type: string
+        company_website:
+          type: object
+          properties:
+            company_website_uuid:
+              type: string
+            url:
+              type: string
+        name:
+          type: string
+        env:
+          type: string
+        account:
+          type: string
+        mfa:
+          type: string
+        has_permissions:
+          type: boolean
+        has_ids_ips:
+          type: boolean
+        is_whitelisted:
+          type: boolean
+        is_3rd_party_hosted:
+          type: boolean
+        created_at:
+          type: string
+        updated_at:
+          type: string
+        created_by:
+          type: string
+        updated_by:
+          type: string
+    TechInfoApplicationCreateUpdate:
+      type: object
+      properties:
+        tech_info_application_uuid:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+        created_by:
+          type: string
+        updated_by:
+          type: string
+    TechInfoApplication2:
+      type: object
+      properties:
+        tech_info_application_uuid:
+          type: string
+        company_uuid:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        status:
+          type: string
+        envs:
+          type: array
+          items:
+            type: object
+            properties:
+              application_env_uuid:
+                type: string
+              type:
+                type: string
+              name:
+                type: string
+              description:
+                type: string
+              url:
+                type: string
+              hosting_provider_type:
+                type: string
+              hosting_provider:
+                type: string
+              mfa_type:
+                type: string
+              mfa:
+                type: string
+              ids_ips_type:
+                type: string
+              ids_ips:
+                type: string
+              status:
+                type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+        created_by:
+          type: string
+        updated_by:
+          type: string
+    CreatePutTechInfoApplication:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Amazon Website
+        type:
+          type: string
+          example: Website
+    TechInfoApplicationPatchUpdateRequest:
+      type: object
+      properties:
+        status:
+          type: string
+    TechInfoExternalInfra:
+      type: object
+      properties:
+        tech_info_external_infra_uuid:
+          type: string
+        company_uuid:
+          type: string
+        company_website:
+          type: object
+          properties:
+            company_website_uuid:
+              type: string
+            url:
+              type: string
+        ip_from:
+          type: string
+        ip_to:
+          type: string
+        env:
+          type: string
+        location:
+          type: string
+        has_permissions:
+          type: boolean
+        has_ids_ips:
+          type: boolean
+        is_whitelisted:
+          type: boolean
+        is_3rd_party_hosted:
+          type: boolean
+        created_at:
+          type: string
+        updated_at:
+          type: string
+        created_by:
+          type: string
+        updated_by:
+          type: string
+    TechInfoExternalInfraCreateUpdate:
+      type: object
+      properties:
+        company_website_uuid:
+          type: string
+        ip_from:
+          type: string
+        ip_to:
+          type: string
+        env:
+          type: string
+        location:
+          type: string
+        has_permissions:
+          type: boolean
+        has_ids_ips:
+          type: boolean
+        is_whitelisted:
+          type: boolean
+        is_3rd_party_hosted:
+          type: boolean
+    TechInfoWireless:
+      type: object
+      properties:
+        tech_info_wireless_uuid:
+          type: string
+        company_uuid:
+          type: string
+        facility:
+          type: object
+          properties:
+            company_facility_uuid:
+              type: string
+            name:
+              type: string
+            address:
+              type: string
+        ssid:
+          type: string
+        description:
+          type: string
+        protocol_type:
+          type: string
+        protocol:
+          type: string
+        security_type:
+          type: string
+        security:
+          type: string
+        status:
+          type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+        created_by:
+          type: string
+        updated_by:
+          type: string
+    TechInfoWirelessCreateUpdate:
+      type: object
+      properties:
+        ssid:
+          type: string
+          example: SSIDTEST
+        description:
+          type: string
+          example: SSIDTEST Description
+        protocol_type:
+          type: string
+          example: 802.11n (Wi-Fi 4)
+        protocol:
+          type: string
+          example: 802.11n (Wi-Fi 4)
+        security_type:
+          type: string
+          example: WPA1
+        security:
+          type: string
+          example: WPA1
+        company_facility_uuid:
+          type: string
+          format: uuid
+          example: 8840a855-8c80-45a0-a6c1-c1d84e324eb1
+    CreateCompanyUserRequestBody:
+      type: object
+      properties:
+        first_name:
+          type: string
+          example: Jon
+        last_name:
+          type: string
+          example: Doe
+        email:
+          type: string
+          example: test@test.com
+        role:
+          type: string
+          enum: [ admin, basic ]
+          example: admin
+    UpdateCompanyUserRequestBody:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [active, inactive, pending]
+          example: active
+        role:
+          type: string
+          enum: [admin, basic]
+          example: admin
+    UpdateAccountInfoBody:
+      type: object
+      properties:
+        first_name:
+          type: string
+          example: Jon
+        last_name:
+          type: string
+          example: Doe
+        phone:
+          type: string
+          example: "+91921ZZZ9XX"
+        job:
+          type: string
+          example: "Engineer"
+        isMfaSmsEnabled:
+          type: bool
+          example: false
+        isMfaAppEnabled:
+          type: bool
+          example: true
+        company_uuid:
+          type: string
+          example: 780f9097-4fa3-47c8-8e8c-66bd53871642
+
+    CompanyUserInternal:
+      type: object
+      properties:
+        user_uuid:
+          type: string
+        email:
+          type: string
+        is_first_login:
+          type: boolean
+        created_at:
+          type: string
+        updated_at:
+          type: string
+        role:
+          type: string
+        status:
+          type: string
+    Meetings:
+      type: object
+      properties:
+        meetings_uuid:
+          type: string
+          example: 58f3820a-d815-4f50-9f2e-567cbe352b3d
+        name:
+          type: string
+          example: Gap Analysis
+        data:
+          type: object
+          properties:
+            scheduling_url:
+              type: string
+              example: "https://calendly.com/petercalendlytest/project-kick-off"
+        description:
+          type: string
+          example: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velic"
+        duration:
+          type: string
+          example: 08:00:00
+        company_types:
+          type: array
+          items:
+            type: string
+            example: Entertainment
+        created_at:
+          type: string
+          example: 2022-10-27T15:25:50+05:30
+        updated_at:
+          type: string
+          example: 2022-10-27T15:25:50+05:30
+        created_by:
+          type: string
+          example: 53020c06-1248-4cf5-a917-b9a682b90c2e
+        updated_by:
+          type: string
+          example: 53020c06-1248-4cf5-a917-b9a682b90c2e
+    CompanyMeetings:
+      type: object
+      properties:
+        start_at:
+          type: string
+          example: 2022-12-01T05:30:00Z
+        utc_start_at:
+          type: string
+          example: 2022-12-01T05:30:00Z
+        data:
+          type: object
+          properties:
+            scheduling_url:
+              type: string
+              example: "https://calendly.com/petercalendlytest/project-kick-off"
+            cancel_url:
+              type: string
+              example: "https://calendly.com/cancellations/006915c1-d8be-4d11-a3a2-3f657161a43a"
+            reschedule_url:
+              type: string
+              example: "https://calendly.com/reschedulings/006915c1-d8be-4d11-a3a2-3f657161a43a"
+            location:
+              type: string
+              example: "https://calendly.com/events/44ba56da-f927-4638-a378-999b402c7c8b/google_meet"
+            status:
+              type: string
+              example: active
+        duration:
+          type: string
+          example: 01:00:00
+        scheduled:
+          type: boolean
+          example: true
+        name:
+          type: string
+          example: Project Kick-off
+        host:
+          type: string
+          example: Peter
+        company_meetings_uuid:
+          type: string
+          example: 44ba56da-f927-4638-a378-999b402c7c8b
+        meetings_uuid:
+          type: string
+          example: b779be31-0681-4268-bc76-588eed57c990
+        company_uuid:
+          type: string
+          example: a0f9e860-f3fa-4994-a8d4-eb156dfce805
+    Signatures:
+      type: object
+      properties:
+        company_signature_uuid:
+          type: string
+          example: 084de476-5842-4d85-85eb-edb64e31965e
+        signature_uuid:
+          type: string
+          example: edbe1e14-7f29-4876-b825-cc7cd614518a
+        name:
+          type: string
+          example: Penetration Test Authorization Form
+        document_url:
+          type: string
+          example: "https://www.docusign.net/Member/PowerFormSigning.aspx?PowerFormId=0324c1ba-514e-45b4-aa58-a272fa7a5806&env=na1&acct=7171320a-7100-4375-97c7-3266016165d9&v=2&Signer_UserName=Peter Leslie&Signer_Email=peter.leslie+da1@nurdsoft.co&EnvelopeField_CompanyUUID=a0f9e860-f3fa-4994-a8d4-eb156dfce805&EnvelopeField_SignatureUUID=cfd12bd3-6ae6-4847-aea3-c29452096d7b&EnvelopeField_UserUUID=64d1802e-1fa4-4732-b182-0719199108a8"
+        document_view_uri:
+          type: string
+          example: "/companies/a0f9e860-f3fa-4994-a8d4-eb156dfce805/signatures/cfd12bd3-6ae6-4847-aea3-c29452096d7b/view"
+        status:
+          type: string
+          enum: [Not Signed, Signed]
+          example: Not Signed
+        date:
+          type: string
+          example: 2022-10-28T17:26:49+05:30
+    Address:
+      type: object
+      properties:
+        company_address_uuid:
+          type: string
+        company_uuid:
+          type: string
+        zip:
+          type: string
+        country:
+          type: string
+        state:
+          type: string
+        city:
+          type: string
+        address1:
+          type: string
+        address2:
+          type: string
+        status:
+          type: string
+        facilities:
+          type: array
+          items:
+            type: object
+            properties:
+              company_facility_uuid:
+                type: string
+              name:
+                type: string
+              type:
+                type: string
+              status:
+                type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+        created_by:
+          type: string
+        updated_by:
+          type: string
+    ApplicationEnv:
+      type: object
+      properties:
+        application_env_uuid:
+          type: string
+          format: uuid
+          example: "fbf52bec-bb06-4b15-8411-a1fce4f8bcf4"
+        company_uuid:
+          type: string
+          format: uuid
+          example: "a0f9e860-f3fa-4994-a8d4-eb156dfce805"
+        tech_info_application_uuid:
+          type: string
+          format: uuid
+          example: "b6d9a545-3d7f-4d51-8ab8-98a63c84c2d1"
+        type:
+          type: string
+          example: Production
+        name:
+          type: string
+          example: Production 1
+        description:
+          type: string
+          example: test description
+        url:
+          type: string
+          example: http://amazon.com
+        hosting_provider_type:
+          type: string
+          example: Google Cloud Platform
+        hosting_provider:
+          type: string
+          example: yes
+        mfa_type:
+          type: string
+          example: Google Authenticator
+        mfa:
+          type: string
+          example: yes
+        ids_ips_type:
+          type: string
+          example: CrowdStrike
+        ids_ips:
+          type: string
+          example: yes
+        status:
+          type: string
+          example: Active
+        created_at:
+          type: string
+          example: 2022-11-10T13:25:32+05:30
+        updated_at:
+          type: string
+          example: 2022-11-10T13:25:32+05:30
+        created_by:
+          type: string
+          format: uuid
+          example: 64d1802e-1fa4-4732-b182-0719199108a8
+        updated_by:
+          type: string
+          format: uuid
+          example: 64d1802e-1fa4-4732-b182-0719199108a8
+    IPRanges:
+      type: object
+      properties:
+        tech_info_ip_range_uuid:
+          type: string
+          format: uuid
+          example: e272dcf0-2238-4575-9723-fbe90675afb3
+        company_uuid:
+          type: string
+          format: uuid
+          example: a0f9e860-f3fa-4994-a8d4-eb156dfce805
+        company_facility_uuid:
+          type: string
+          format: uuid
+          example: cae604d4-fa68-4163-a5eb-69b4c902d41b
+        facility:
+          type: object
+          properties:
+            company_facility_uuid:
+              type: string
+              format: uuid
+              example: cae604d4-fa68-4163-a5eb-69b4c902d41b
+            name:
+              type: string
+              example: Corporate Office
+            address:
+              type: string
+              example: 2832,Snider Street,Aurora,CL,US,800167
+        ip_address:
+          type: string
+          example: 192.168.1.1
+        prefix:
+          type: number
+          example: 24
+        is_external:
+          type: boolean
+          example: false
+        status:
+          type: string
+          example: Active
+        created_at:
+          type: string
+          example: 2022-11-10T17:22:49+05:30
+        updated_at:
+          type: string
+          example: 2022-11-10T17:22:49+05:30
+        created_by:
+          type: string
+          format: uuid
+          example: 64d1802e-1fa4-4732-b182-0719199108a8
+        updated_by:
+          type: string
+          format: uuid
+          example: 64d1802e-1fa4-4732-b182-0719199108a8
+    GetAllPolicies:
+      type: object
+      properties:
+        name:
+          type: string
+          example: First Policy
+        version:
+          type: number
+          example: 5
+        last_draft_date:
+          type: string
+          example: 2022-11-16T14:21:45+05:30
+        status:
+          type: string
+          example: Draft
+        status_updated_at:
+          type: string
+          example: 2022-11-16T14:21:45+05:30
+        status_updated_by:
+          type: object
+          properties:
+            first_name:
+              type: string
+              example: Test Firstname
+            last_name:
+              type: string
+              example: Test Lastname
+            ico:
+              type: string
+              example: ""
+            email:
+              type: string
+              example: ptest@nurdsoft.co
+            user_uuid:
+              type: string
+              example: 64d1802e-1fa4-4732-b182-0719199108a8
+        policy_uuid:
+          type: string
+          example: fa1fa992-faeb-47e7-97a1-64b03c65d6c8
+        owner:
+          type: object
+          properties:
+            first_name:
+              type: string
+              example: Test Firstname
+            last_name:
+              type: string
+              example: Test Lastname
+            ico:
+              type: string
+              example: ""
+            email:
+              type: string
+              example: ptest@nurdsoft.co
+            user_uuid:
+              type: string
+              example: 64d1802e-1fa4-4732-b182-0719199108a8
+    Policy:
+      type: object
+      properties:
+        policy_uuid:
+          type: string
+          format: uuid
+          example: "95bbca09-cae9-462e-9521-6fe9ff8e294e"
+        company_uuid:
+          type: string
+          format: uuid
+          example: "a0f9e860-f3fa-4994-a8d4-eb156dfce805"
+        policy_template_uuid:
+          type: string
+          format: uuid
+          example: ""
+        name:
+          type: string
+          example: "Policy"
+        status:
+          type: string
+          enum: [Draft, Approved, Submitted, Rejected]
+          example: "Draft"
+        created_at:
+          type: string
+          format: 'date-time'
+          example: "2022-11-17T17:15:05+05:30"
+        updated_at:
+          type: string
+          format: 'date-time'
+          example: ""
+        created_by:
+          type: string
+          format: uuid
+          example: "64d1802e-1fa4-4732-b182-0719199108a8"
+        updated_by:
+          type: string
+          format: uuid
+          example: ""
+    PolicyDocument:
+      type: object
+      properties:
+        policy_uuid:
+          type: string
+          format: uuid
+          example: fa1fa992-faeb-47e7-97a1-64b03c65d6c8
+        name:
+          type: string
+          example: Policy name
+        version:
+          type: number
+          example: 3
+        document:
+          type: string
+          example: "<html></html>"
+        status:
+          type: string
+          example: Draft
+        status_updated_at:
+          type: string
+          format: 'date-time'
+          example: 2022-11-16T14:21:45.791045+05:30
+        status_updated_by:
+          type: object
+          properties:
+            user_uuid:
+              type: string
+              format: uuid
+              example: 64d1802e-1fa4-4732-b182-0719199108a8
+            first_name:
+              type: string
+              example: Alwin
+            last_name:
+              type: string
+              example: Robert
+            ico:
+              type: string
+              example: ""
+            email:
+              type: string
+              example: test@nurdsoft.co
+        owner:
+          type: object
+          properties:
+            user_uuid:
+              type: string
+              format: uuid
+              example: 64d1802e-1fa4-4732-b182-0719199108a8
+            first_name:
+              type: string
+              example: Alwin
+            last_name:
+              type: string
+              example: Robert
+            ico:
+              type: string
+              example: ""
+            email:
+              type: string
+              example: test@nurdsoft.co
+        created_at:
+          type: string
+          format: 'date-time'
+          example: 2022-11-16T14:21:45.791045+05:30
+    PolicyHistory:
+      type: object
+      properties:
+        policy_history_uuid:
+          type: string
+          format: uuid
+          example: 64d1802e-1fa4-4732-b182-0719199108a8
+        version:
+          type: number
+          example: 4
+        created_at:
+          type: string
+          format: 'date-time'
+          example: 2022-11-16T14:21:45.791045+05:30
+        owner:
+          type: object
+          properties:
+            user_uuid:
+              type: string
+              format: uuid
+              example: 64d1802e-1fa4-4732-b182-0719199108a8
+            first_name:
+              type: string
+              example: Alwin
+            last_name:
+              type: string
+              example: Robert
+            ico:
+              type: string
+              example: ""
+            email:
+              type: string
+              example: test@nurdsoft.co
+    GetVulnerabilities:
+      type: object
+      properties:
+        severity:
+          type: string
+          example: High
+        scvss:
+          type: string
+          example: demo
+        instance:
+          type: string
+          example: demo
+        date:
+          type: string
+          example: 2022-11-16T14:21:45+05:30
+        issue:
+          type: string
+          example: demo
+        remediation:
+          type: object
+          properties:
+            category:
+              type: string
+              example: demo
+            code:
+              type: string
+              example: demo
+            description:
+              type: string
+              example: demo
+            risk:
+              type: string
+              example: demo
+            recommendation:
+              type: string
+              example: demo
+    VulnerabilityStats:
+      type: object
+      properties:
+        scans:
+          type: object
+          properties:
+            currnet:
+              type: string
+              example: 2022-11-16T14:21:45+05:30
+            next:
+              type: string
+              example: 2022-11-16T14:21:45+05:30
+        critical:
+          type: object
+          properties:
+            current:
+              type: integer
+            performance:
+              type: integer
+            stats:
+              type: array
+              items:
+                type: object
+                properties:
+                  value:
+                    type: integer
+                  date:
+                    type: string
+        total:
+          type: object
+          properties:
+            current:
+              type: integer
+            performance:
+              type: integer
+            stats:
+              type: array
+              items:
+                type: object
+                properties:
+                  value:
+                    type: integer
+                  date:
+                    type: string
+        count:
+          type: object
+          properties:
+            critical:
+              type: integer
+              example: 4
+            high:
+              type: integer
+              example: 4
+            medium:
+              type: integer
+              example: 4
+            low:
+              type: integer
+              example: 4
+    TopRemediations:
+      type: array
+      items:
+        type: object
+        properties:
+          title:
+            type: string
+            example: "Obsolete Version of PHP"
+          remediation_detail:
+            type: object
+            properties:
+              remediation_name:
+                type: string
+                example: "Security Update for Microsoft Office 2010 (KB3203468) 64-Bit Edition"
+              remediation_link:
+                type: string
+                example: "https://support.microsoft.com/kb/3203468"
+              issue_description:
+                type: string
+                example: "Unsupported versions of PHP may contain unpatched security flaws. It is strongly recommended to upgrade to a supported version."
+              recommendations:
+                type: array
+                items:
+                  type: string
+                  example: "Download and apply the patch from: http://support.microsoft.com/kb/2956073 (http://support.microsoft.com/kb/2956073)"
+    GetPenetrationTests:
+      type: object
+      properties:
+        severity:
+          type: string
+          example: High
+        scvss:
+          type: string
+          example: demo
+        instance:
+          type: string
+          example: demo
+        date:
+          type: string
+          example: 2022-11-16T14:21:45+05:30
+        issue:
+          type: string
+          example: demo
+        remediation:
+          type: object
+          properties:
+            category:
+              type: string
+              example: demo
+            code:
+              type: string
+              example: demo
+            description:
+              type: string
+              example: demo
+            risk:
+              type: string
+              example: demo
+            recommendation:
+              type: string
+              example: demo
+    PenetrationTestsStats:
+      type: object
+      properties:
+        scans:
+          type: object
+          properties:
+            currnet:
+              type: string
+              example: 2022-11-16T14:21:45+05:30
+            next:
+              type: string
+              example: 2022-11-16T14:21:45+05:30
+        critical:
+          type: object
+          properties:
+            current:
+              type: integer
+            performance:
+              type: integer
+            stats:
+              type: array
+              items:
+                type: object
+                properties:
+                  value:
+                    type: integer
+                  date:
+                    type: string
+        total:
+          type: object
+          properties:
+            current:
+              type: integer
+            performance:
+              type: integer
+            stats:
+              type: array
+              items:
+                type: object
+                properties:
+                  value:
+                    type: integer
+                  date:
+                    type: string
+        count:
+          type: object
+          properties:
+            critical:
+              type: integer
+              example: 4
+            high:
+              type: integer
+              example: 4
+            medium:
+              type: integer
+              example: 4
+            low:
+              type: integer
+              example: 4
+    ListRemediations:
+      type: object
+      properties:
+        severity:
+          type: string
+          example: Medium
+        instances:
+          type: integer
+          example: 23
+        source:
+          type: string
+          example: demo
+        issue_name:
+          type: string
+          example: demo
+        recommendation:
+          type: string
+          example: demo
+    Frameworks:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 64d1802e-1fa4-4732-b182-0719199108a8
+        name:
+          type: string
+          example: Lorem Ipsum
+    FrameworkControls:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 64d1802e-1fa4-4732-b182-0719199108a8
+        name:
+          type: string
+          example: Lorem Ipsum
+        domain:
+          type: string
+          example: Lorem Ipsum
+        topic:
+          type: string
+          example: Lorem Ipsum
+        best_practice:
+          type: string
+          example: Lorem Ipsum Sentence
+        solution:
+          type: string
+          example: Lorem Ipsum Sentence
+    FrameworkStats:
+      type: object
+      properties:
+        name:
+          type: string
+          example: MPA
+        completed:
+          type: integer
+          example: 12
+        total:
+          type: integer
+          example: 21 
+    PoliciesStats:
+      type: object
+      properties:
+        total:
+          type: integer
+          example: 30
+        approved:
+          type: integer
+          example: 10
+        submitted:
+          type: integer
+          example: 10
+        rejected:
+          type: integer
+          example: 10
+    Company:
+      type: object
+      properties:
+        company_uuid:
+          type: string
+          example: a0f9e860-f3fa-4994-a8d4-eb156dfce805
+        name:
+          type: string
+          example: DEV Account 1
+        role:
+          type: string
+          example: admin
+        group:
+          type: string
+          example: superadmin
+
+    SubscriptionsPlan:
+      type: object
+      properties:
+        subscription_plan_uuid:
+          type: string
+          example: a0f9e860-f3fa-4994-a8d4-eb156dfce805
+        status:
+          type: string
+          example: Active
+        plan_type:
+          type: string
+          example: Gold
+        start_date:
+          type: string
+          example: 2022-11-10T17:22:49+05:30
+        end_date:
+          type: string
+          example: 2022-11-10T17:22:49+05:30
+    ServiceReview:
+      type: object
+      properties:
+        service_review_uuid:
+          type: string
+          example: a0f9e860-f3fa-4994-a8d4-eb156dfce805
+        service_name:
+          type: string
+          example: Vulnerability Management
+        status:
+          type: string
+          example: AKNOWLEDGED          
+        subscription_type:
+          type: string
+          example: monthly
+        evidences:
+          type: array
+          items:
+            type: object
+            properties:
+              evidence_uuid:
+                type: string
+                example: "a0f9e860-f3fa-4994-a8d4-eb156dfce805"
+              completed_on:
+                type: string
+                format: 'date-time'
+                example: "2023-03-15T11:46:21+05:30"
+              acknowledged_at:
+                type: string
+                format: 'date-time'
+                example: "2023-03-15T11:46:21+05:30"
+              acknowledged_by:
+                type: string
+                example: "Shyam Bhanushali"
+              status:
+                type: string
+                example: ACKNOWLEDGED
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    file_uuid:
+                      type: string
+                      example: a0f9e860-f3fa-4994-a8d4-eb156dfce805
+                    file_name:
+                      type: string
+                      example: "file1.pdf"
+                    file_url:
+                      type: string
+                      example: "https://www.google.com"                           
+    Evidence:
+      type: object
+      properties:
+        evidence_uuid:
+          type: string
+          example: "a0f9e860-f3fa-4994-a8d4-eb156dfce805"
+        created_at:
+          type: string
+          format: 'date-time'
+          example: "2023-01-10"
+        updated_at:
+          type: string
+          format: 'date-time'
+          example: "2023-01-10"                
+        updated_by:
+          type: string
+          example: "Shyam Bhanushali"
+        status:
+          type: string
+          example: AKNOWLEDGED
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              file_uuid:
+                type: string
+                example: a0f9e860-f3fa-4994-a8d4-eb156dfce805
+              file_name:
+                type: string
+                example: "file1.pdf"
+              file_url:
+                type: string
+                example: "https://www.google.com"    
+
+  securitySchemes:
+    bearerAuth:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT    # optional, arbitrary value for documentation purposes
+  parameters:
+    CompanyIdPathParameter:
+      in: path
+      name: company_id
+      description: Company UUID
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 9940c9d2-8ef0-42b9-8626-5be545d1e63d
+    UserIdPathParameter:
+      in: path
+      name: user_id
+      description: User UUID
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 64d1802e-1fa4-4732-b182-0719199108a8
+    EvidenceIdPathParatameter:
+      in: path
+      name: evidence_id
+      description: Evidence UUID
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 64d1802e-1fa4-4732-b182-0719199108a8
+    ServiceIdPathParameter:
+      in: path
+      name: service_id
+      description: Service UUID
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 64d1802e-1fa4-4732-b182-0719199108a8
+    ReportIdPathParatameter:
+      in: path
+      name: report_id
+      description: Report UUID
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 64d1802e-1fa4-4732-b182-0719199108a8
+    ReqUserIdPathParameter:
+      in: path
+      name: req_user_id
+      description: Logged User UUID who is requesting this operation
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 64d1802e-1fa4-4732-b182-0719199108a8
+    UserIdToUpdateDeletePathParameter:
+      in: path
+      name: user_id
+      description: UUID of the user which needs to update or delete
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 64d1802e-1fa4-4732-b182-0719199108a8
+    WebsiteIdPathParameter:
+      in: path
+      name: website_id
+      description: Website UUID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    ApplicationIdPathParameter:
+      in: path
+      name: application_id
+      description: Application UUID
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: ed570878-3156-45d9-a6ae-a738af09871a
+    EnvIdPathParameter:
+      in: path
+      name: env_id
+      description: Application Env UUID
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: fbf52bec-bb06-4b15-8411-a1fce4f8bcf4
+    ExternalInfraIdPathParameter:
+      in: path
+      name: external_infra_id
+      description: External Infrastructure UUID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    WirelessIdPathParameter:
+      in: path
+      name: wireless_id
+      description: Wireless UUID
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: d6254e38-1030-4499-aecc-9ec139ed9c00
+    AddressIdPathParameter:
+      in: path
+      name: address_id
+      description: Company Address UUID
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 4c05fe6d-1b49-467e-a2fb-a5d318d6b796
+    CompanySignatureUuidPathParameter:
+      in: path
+      name: company_signature_uuid
+      description: Company Signature Uuid
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 4c05fe6d-1b49-467e-a2fb-a5d318d6b796
+    Status:
+      in: path
+      name: status
+      description: Status
+      required: true
+      schema:
+        type: string
+        example: Active
+    FacilityQuery:
+      in: query
+      name: query
+      description: Collect the result set by filtering using facility name or type
+      required: false
+      schema:
+        type: string
+        example: "%corporate%"
+    FacilityStatus:
+      in: query
+      name: status
+      description: Collect the result set by filtering using facility status
+      required: false
+      schema:
+        type: string
+        example: Active
+    IpRangeIdPathParameter:
+      in: path
+      name: ip_range_id
+      description: IP Range UUID
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: a491c140-375a-4f3d-86e8-5d7752c51f87
+    PolicyIdPathParameter:
+      in: path
+      name: policy_id
+      description: Policy UUID
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: fa1fa992-faeb-47e7-97a1-64b03c65d6c8
+    TemplateIdPathParameter:
+      in: path
+      name: template_id
+      description: Template UUID
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: fa1fa992-faeb-47e7-97a1-64b03c65d6c8
+    Version:
+      in: query
+      name: version
+      description: Policy document version
+      required: false
+      schema:
+        type: integer
+        example: 3
+    Top:
+      in: query
+      name: top
+      description: Only return Top N elements
+      required: false
+      schema:
+        type: integer
+        example: 3
+    SeverityPathParameter:
+      in: query
+      name: severity
+      description: Severity Level for Vulnerabilities & Penetration Tests
+      required: false
+      schema:
+        type: string
+        example: Critical
+    Keyword:
+      in: query
+      name: keyword
+      required: false
+      schema:
+        type: string
+    FrameworkIdPathParameter:
+      in: path
+      name: framework_id
+      description: Framework UUID
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 64d1802e-1fa4-4732-b182-0719199108a8
+    CategoryPathParameter:
+      in: path
+      name: category
+      description: Category
+      required: true
+      schema:
+        type: string
+        example: Electronic Access
+    CompanyType:
+      in: query
+      name: company_type
+      description: Company type
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+          example: Entertainment
+          enum: ["Entertainment", "Public", "Agriculture", "Apparel", "Banking", "Biotechnology", "Chemicals", "Communications", "Construction", "Consulting", "Education", "Electronics", "Energy", "Engineering", "Environment", "Finance", "Food & Beverage", "Government", "Healthcare", "Hospitality", "Insurance", "Machinery", "Manufacturing", "Media", "Not For Profit", "Other", "Recreation", "Retail", "Shipping", "Telecommunications", "Transportation", "Utilities", "Legal", "Human Resources", "Consumer", "Real Estate"]
+    AccessToken:
+      name: Access
+      in: header
+      description: Access token
+      required: true
+    ServiceName:
+      in: path
+      name: service_name
+      description: Service name
+      required: true
+      schema:
+        type: string
+        example: Vulnerability Management
+    ReportName:
+      in: path
+      name: report_name
+      description: Report name
+      required: true
+      schema:
+        type: string
+        example: sample.pdf
+    Token:
+      in: query
+      name: token
+      required: true
+      schema:
+        type: string
+    QuestionnaireIdPathParameter:
+      in: path
+      name: questionnaire_id
+      description: Questionnaire UUID
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 64d1802e-1fa4-4732-b182-0719199108a8
+    AnswerIdPathParameter:
+      in: path
+      name: answer_id
+      description: Questionnaire-Answer UUID
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 64d1802e-1fa4-4732-b182-0719199108a8
+    FileIdPathParameter:
+      in: path
+      name: file_id
+      description: Answer Evidence File UUID
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 64d1802e-1fa4-4732-b182-0719199108a8
+

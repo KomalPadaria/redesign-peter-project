@@ -1,0 +1,59 @@
+Common:
+  Name: redesign-v1
+  Env: local
+  Version: 1.0
+  UserAgent: "redesign/1.0"
+  Component: "API"
+  FrontendDomain: rdf.nurdsoft.co
+Logger:
+  FileLogEnabled: false
+AccessControlAllowOrigins:
+  - "*"
+Transport:
+  HTTP:
+    Port: 8080
+  GRPC:
+    Port: 9002
+DB:
+  Postgres:
+    Host: localhost
+    Port: 5442
+    Database: redesign
+    User: db
+    Password: 123
+Salesforce:
+  ApiHost: xxxx
+  ApiVersion: xxxx
+  ClientID: xxxx
+  ClientSecret: xxxx
+  Username: xxxx
+  Password: xxxx
+  MainSubscriptions: 01tJx000002EvTVIA0,01tJx000002EqVSIA0,01tJx000002Ev0UIAS,01tJx000002Ev5KIAS
+  ServiceSubscriptions: 01tJx000002EsPDIA0,01tJx000002F2DGIA0,01tJx000002F3pFIAS,802Jx000000aocgIAA,01tJx000002F3xJIAS,01t5w00000Fiq1iAAB,01t5w00000Fiq1eAAB,
+  ConsultingHoursSubscriptions: 01t5w00000Fiq1iAAB
+  FrameworksSubscriptions: 01t5w00000G8MdxAAF-MPA,01tJx000002EsPDIA0-CIS
+Cognito:
+  AwsRegion: us-west-1
+  UserPoolID: us-west-1_7TmkpJfy7
+Ses:
+  AwsRegion: us-west-1
+  InviteSenderEmail: xxxx
+Calendly:
+  ApiHost: https://api.calendly.com
+  AccessToken: xxxx
+Rapid7:
+  DataWarehouse:
+    Postgres:
+      Host: xxxx
+      Port: xxxx
+      Database: xxxx
+      User: xxxx
+      Password: xxxx
+Jira:
+  Username: xxxx
+  ApiToken: xxxx
+  ProjectKey: EDT
+S3:
+  AwsRegion: us-west-2
+  BucketName: redesign-reports
+
