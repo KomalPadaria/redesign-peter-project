@@ -5,7 +5,7 @@ import "github.com/pkg/errors"
 type ErrNotFound struct {
 	Message string
 }
-//test error
+//test error after creating branch in BND
 func (e *ErrNotFound) Error() string {
 	return e.Message
 }
